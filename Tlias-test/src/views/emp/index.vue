@@ -42,18 +42,26 @@ watch(() => params.value.date, (newVal, oldVal) => {
   }
 }, { deep: true })
 
-watch(() => params.value.page, () => {
+const handleSizeChange = () => {
   onSubmit()
-})
+}
 
-watch(() => params.value.pageSize, () => {
+const handleCurrentChange = () => {
   onSubmit()
-})
+}
+
 
 onMounted(async () => {
   onSubmit()
 })
 
+// 弹窗
+const dialogFormVisible = ref(false)
+const form = ref({
+  name: '',
+  region: ''
+})
+const formLabelWidth = '120px'
 </script>
 
 <template>
@@ -62,7 +70,13 @@ onMounted(async () => {
       <h2>员工管理</h2>
     </div>
     <span>
+      表单数据
       {{ params }}
+    </span>
+    <br>
+    <span>
+      弹窗数据
+      {{ form }}
     </span>
     <el-form :inline="true" :model="params" class="demo-form-inline">
       <el-form-item style="width: 200px;" label="姓名">
@@ -128,6 +142,7 @@ onMounted(async () => {
       <el-table-column label="操作">
         <template #default="scope">
           <el-button 
+            @click="dialogFormVisible = true"
             size="small"
             type="primary"
           >
@@ -158,7 +173,29 @@ onMounted(async () => {
         @current-change="handleCurrentChange"
       />
     </div>
-    
+
+    <!-- 弹窗 -->
+    <el-dialog v-model="dialogFormVisible" title="弹窗" width="500">
+      <el-form :model="form">
+        <el-form-item label="Promotion name" :label-width="formLabelWidth">
+          <el-input v-model="form.name" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="Zones" :label-width="formLabelWidth">
+          <el-select v-model="form.region" placeholder="Please select a zone">
+            <el-option label="Zone No.1" value="shanghai" />
+            <el-option label="Zone No.2" value="beijing" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">Cancel</el-button>
+          <el-button type="primary" @click="dialogFormVisible = false">
+            Confirm
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
