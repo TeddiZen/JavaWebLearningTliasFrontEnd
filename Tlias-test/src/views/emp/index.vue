@@ -122,7 +122,7 @@ const formLabelWidth = '120px'
       <!-- @vue-generic {User} -->
       <el-table-column prop="id" label="ID" width="50" />
       <el-table-column prop="name" label="姓名" width="120" />
-      <el-table-column prop="image" label="头像" width="80" >
+      <el-table-column prop="image" label="头像" width="90" >
         <template #default="scope">
           <img v-if="scope.row.image" :src="scope.row.image" alt="" style="width: 40px; height: 40px; border-radius: 10%;" />
           <span v-else>无</span>
