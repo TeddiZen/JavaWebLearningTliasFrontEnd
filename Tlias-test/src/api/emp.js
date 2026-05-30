@@ -8,4 +8,7 @@ export function getEmpList(params) {
   )
 }
 
-
+export function getEmpById(id) {
+  console.log(id)
+  return request.get('/emps/' + id)
+}
