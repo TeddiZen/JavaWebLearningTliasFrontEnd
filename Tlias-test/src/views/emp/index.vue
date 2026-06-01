@@ -20,7 +20,7 @@ const emps = ref({
 
 // 弹窗
 const dialogVisible = ref(false)
-const dialogTitle = ref('添加员工')\
+const dialogTitle = ref('添加员工')
 
 const employee = ref({
   username: 'teddi',
@@ -227,6 +227,9 @@ onMounted(async () => {
 
     <!-- 弹窗 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle">
+      <span>
+        {{ employee }}
+      </span>
       <el-form :model="employee" label-width="80px">
         <!-- 基本信息 -->
         <!-- 第一行 -->
