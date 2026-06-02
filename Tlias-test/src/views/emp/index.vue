@@ -1,5 +1,5 @@
 <script setup>
-import { getEmpList, getEmpById } from '@/api/emp'
+import { getEmpList, getEmpById, addEmp } from '@/api/emp'
 import { onMounted, ref, watch,  } from 'vue'
 
 const params = ref({
@@ -23,6 +23,7 @@ const dialogVisible = ref(false)
 const dialogTitle = ref('添加员工')
 
 const employee = ref({
+  id: 0,
   username: 'teddi',
   name: '哲迪君',
   gender: '1',
@@ -33,13 +34,15 @@ const employee = ref({
   entryDate: '2026-05-05',
   image: '',
   exprList: [{
-    startDate: '2026-05-14',
-    endDate: '2026-06-18',
+    id: 1,
+    begin: '2026-05-14',
+    end: '2026-06-18',
     company: '12312',
-    position: '567yey'
+    job: '567yey',
   }],
 })
 
+// 监听查询日期范围变化
 const dateChange = ref([])
 watch(() => dateChange.value, (newVal, oldVal) => {
   if (newVal.length > 0) {
@@ -50,11 +53,19 @@ watch(() => dateChange.value, (newVal, oldVal) => {
 
 const formLabelWidth = '120px'
 
+const subEmployee = async () => {
+  console.log(employee.value)
+  const res = await addEmp(employee.value)
+  console.log(res)
+  dialogVisible.value = false
+  onSubmit()
+}
 
 const onSubmit = async () => {
   console.log('submit!')
-  emps.value = await getEmpList(params.value)
-  console.log(emps.value)
+  const res = await getEmpList(params.value)
+  emps.value.data = res.data
+  console.log(res)
 }
 
 const onClear = () => {
@@ -67,13 +78,22 @@ const onClear = () => {
 }
 
 
-
+// 监听日期范围变化
 watch(() => params.value.date, (newVal, oldVal) => {
   if (newVal.length > 0) {
     params.value.begin = newVal[0]
     params.value.end = newVal[1]
   }
 }, { deep: true })
+
+// 监听工作经历变化
+watch(() => employee.value.exprList, (newVal, oldVal) => {
+  if (newVal.length > 0) {
+    newVal.forEach((item, index) => {
+      item.id = index + 1
+    })
+  }
+}, { deep: 1 })// 监听工作经历变化，更新ID
 
 const handleSizeChange = () => {
   onSubmit()
@@ -85,7 +105,8 @@ const handleCurrentChange = () => {
 
 // 添加工作经历
 const addExperience = () => {
-  formData.value.exprList.push({
+  employee.value.exprList.push({
+    id: 0,
     startDate: '',
     endDate: '',
     company: '',
@@ -105,10 +126,10 @@ const handleEdit = async (id) => {
 
 //// 删除工作经历
 const removeExperience = (index) => {
-  formData.value.exprList.splice(index, 1)
+  employee.value.exprList.splice(index, 1)
 }
 
-
+// 初始化时查询员工列表
 onMounted(async () => {
   onSubmit()
 })
@@ -326,7 +347,7 @@ onMounted(async () => {
         <el-row :gutter="10">
           <el-col :span="24">
             <el-form-item label="工作经历">
-              <el-button type="success" size="small" @click="">+ 添加工作经历</el-button>
+              <el-button type="success" size="small" @click="addExperience">+ 添加工作经历</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -336,7 +357,7 @@ onMounted(async () => {
           <el-row :gutter="3" :key="index">
             <el-col :span="10">
               <el-form-item size="small" label="时间" label-width="80px">
-                <el-date-picker v-model="item.startDate"  style="width: 100%;" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" format="YYYY-MM-DD" value-format="YYYY-MM-DD" ></el-date-picker>
+                <el-date-picker @change="(val) => { console.log(val) }" v-model="item.date" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" format="YYYY-MM-DD" value-format="YYYY-MM-DD"  style="width: 100%;" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" format="YYYY-MM-DD" value-format="YYYY-MM-DD" ></el-date-picker>
               </el-form-item>
             </el-col>
   
@@ -348,13 +369,13 @@ onMounted(async () => {
   
             <el-col :span="6">
               <el-form-item  size="small" label="职位" label-width="60px">
-                <el-input v-model="item.position"  placeholder="请输入职位"></el-input>
+                <el-input v-model="item.job"  placeholder="请输入职位"></el-input>
               </el-form-item>
             </el-col>
   
             <el-col :span="2">
               <el-form-item size="small" label-width="0px">
-                <el-button type="danger" >- 删除</el-button>
+                <el-button type="danger" size="small" @click="removeExperience(index)">- 删除</el-button>
               </el-form-item>
             </el-col>
           </el-row>
@@ -367,7 +388,7 @@ onMounted(async () => {
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="">保存</el-button>
+          <el-button type="primary" @click="subEmployee">保存</el-button>
         </span>
       </template>
     

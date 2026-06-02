@@ -8,7 +8,13 @@ export function getEmpList(params) {
   )
 }
 
+// 根据ID获取员工详情
 export function getEmpById(id) {
   console.log(id)
   return request.get('/emps/' + id)
+}
+
+export function addEmp(employee) {
+  console.log(employee)
+  return request.put('/emps', employee)
 }
