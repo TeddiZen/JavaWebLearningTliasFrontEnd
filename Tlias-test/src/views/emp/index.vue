@@ -39,8 +39,23 @@ const employee = ref({
     end: '2026-06-18',
     company: '12312',
     job: '567yey',
+    date: []
   }],
 })
+watch(
+  () => employee.value.exprList,
+  (list) => {
+    console.log(1)
+    list.forEach((newItem) => {
+      if (newItem.date && newItem.date.length === 2) {
+        // 把 date 数组 → 赋值给 begin 和 end
+        newItem.begin = newItem.date[0]
+        newItem.end = newItem.date[1]
+      }
+    })
+  },
+  { deep: true } // 必须加 deep
+)
 
 // 监听查询日期范围变化
 const dateChange = ref([])
@@ -107,10 +122,11 @@ const handleCurrentChange = () => {
 const addExperience = () => {
   employee.value.exprList.push({
     id: 0,
-    startDate: '',
-    endDate: '',
+    begin: '',
+    end: '',
     company: '',
-    position: ''
+    job: '',
+    date: []
   })
 }
 
@@ -118,10 +134,13 @@ const addExperience = () => {
 const handleEdit = async (id) => {
   console.log(id)
   const res = await getEmpById(id)
+  console.log(res)
   employee.value = res.data
   dialogTitle.value = '修改员工'
   dialogVisible.value = true
-  dateChange.value = [employee.value.entryDate, employee.value.entryDate]
+  employee.value.exprList.forEach((item) => {
+    item.date = [item.begin, item.end]
+  })
 }
 
 //// 删除工作经历
@@ -357,7 +376,7 @@ onMounted(async () => {
           <el-row :gutter="3" :key="index">
             <el-col :span="10">
               <el-form-item size="small" label="时间" label-width="80px">
-                <el-date-picker @change="(val) => { console.log(val) }" v-model="item.date" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" format="YYYY-MM-DD" value-format="YYYY-MM-DD"  style="width: 100%;" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" format="YYYY-MM-DD" value-format="YYYY-MM-DD" ></el-date-picker>
+                <el-date-picker type="daterange" v-model="item.date" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" format="YYYY-MM-DD" value-format="YYYY-MM-DD"  style="width: 100%;" ></el-date-picker>
               </el-form-item>
             </el-col>
   
