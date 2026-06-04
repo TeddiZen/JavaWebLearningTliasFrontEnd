@@ -1,5 +1,5 @@
 <script setup>
-import { getEmpList, getEmpById, addEmp } from '@/api/emp'
+import { getEmpList, getEmpById, addEmp} from '@/api/emp'
 import { onMounted, ref, watch,  } from 'vue'
 
 const params = ref({
@@ -116,6 +116,26 @@ const handleSizeChange = () => {
 
 const handleCurrentChange = () => {
   onSubmit()
+}
+
+const handleAvatarSuccess = (res, file) => {
+  console.log('上传成功', res, file)
+  employee.value.image = res.data.url
+}
+
+const beforeAvatarUpload = (file) => {
+  const isImage = file.type.startsWith('image/')
+  // 检查文件大小
+  const isLt2M = file.size / 1024 / 1024 < 2
+
+  if (!isImage) {
+    ElMessage.error('只能上传图片！')
+  }
+  if (!isLt2M) {
+    ElMessage.error('图片不能超过 2MB！')
+  }
+  
+  return isImage && isLt2M
 }
 
 // 添加工作经历
@@ -353,7 +373,7 @@ onMounted(async () => {
                 :on-success="handleAvatarSuccess"
                 :before-upload="beforeAvatarUpload"
                 >
-                <img v-if="employee.image" :src="employee.image" class="avatar" />
+                <img v-if="employee.image && employee.image !== ''" :src="employee.image" class="avatar" />
                 <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
               </el-upload>
             </el-form-item>
