@@ -120,7 +120,7 @@ const handleCurrentChange = () => {
 
 const handleAvatarSuccess = (res, file) => {
   console.log('上传成功', res, file)
-  employee.value.image = res.data.url
+  employee.value.image = res.data
 }
 
 const beforeAvatarUpload = (file) => {
