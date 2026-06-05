@@ -162,6 +162,14 @@ const addEmployee = async () => {
   dialogVisible.value = true
 }
 
+// 批量删除员工
+const delEmployee = async (ids) => {
+  console.log(ids)
+  const res = await delEmp(ids)
+  console.log(res)
+  onSubmit()
+}
+
 // 添加工作经历
 const addExperience = () => {
   employee.value.exprList.push({

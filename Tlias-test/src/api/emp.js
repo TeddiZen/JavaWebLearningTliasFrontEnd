@@ -29,3 +29,9 @@ export function addEmp(employee) {
   console.log(employee)
   return request.post('/emps', employee)
 }
+
+// 删除员工
+export function delEmp(ids) {
+  console.log(ids)
+  return request.delete('/emps', {params: ids})
+}
