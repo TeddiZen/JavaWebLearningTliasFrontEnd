@@ -1,5 +1,5 @@
 <script setup>
-import { getEmpList, getEmpById, addEmp} from '@/api/emp'
+import { getEmpList, getEmpById, addEmp, delEmp, updateEmp } from '@/api/emp'
 import { onMounted, ref, watch,  } from 'vue'
 
 const params = ref({
@@ -68,9 +68,14 @@ watch(() => dateChange.value, (newVal, oldVal) => {
 
 const formLabelWidth = '120px'
 
+// 更新员工信息
 const subEmployee = async () => {
-  console.log(employee.value)
-  const res = await addEmp(employee.value)
+  let res = {}
+  if (dialogTitle.value === '添加员工') {
+    res = await addEmp(employee.value)
+  } else {
+    res = await updateEmp(employee.value)
+  }
   console.log(res)
   dialogVisible.value = false
   onSubmit()
@@ -110,19 +115,19 @@ watch(() => employee.value.exprList, (newVal, oldVal) => {
   }
 }, { deep: 1 })// 监听工作经历变化，更新ID
 
+// 分页检查模块
 const handleSizeChange = () => {
   onSubmit()
 }
-
 const handleCurrentChange = () => {
   onSubmit()
 }
 
+// 图片上传模块
 const handleAvatarSuccess = (res, file) => {
   console.log('上传成功', res, file)
   employee.value.image = res.data
 }
-
 const beforeAvatarUpload = (file) => {
   const isImage = file.type.startsWith('image/')
   // 检查文件大小
@@ -136,6 +141,24 @@ const beforeAvatarUpload = (file) => {
   }
   
   return isImage && isLt2M
+}
+
+// 添加员工
+const addEmployee = async () => {
+  dialogTitle.value = '添加员工'
+  employee.value = {
+    username: '',
+    name: '',
+    gender: '',
+    phone: '',
+    job: '',
+    salary: '',
+    deptName: '',
+    entryDate: '',
+    image: '',
+    exprList: []
+  }
+  dialogVisible.value = true
 }
 
 // 添加工作经历
@@ -167,6 +190,8 @@ const handleEdit = async (id) => {
 const removeExperience = (index) => {
   employee.value.exprList.splice(index, 1)
 }
+
+
 
 // 初始化时查询员工列表
 onMounted(async () => {
@@ -218,6 +243,10 @@ onMounted(async () => {
         <el-button type="info" @click="onClear">清空</el-button>
       </el-form-item>
     </el-form>
+
+    <!-- 添加员工和删除员工的按钮 -->
+    <el-button type="primary" @click="addEmployee">+  添加员工</el-button>
+    <el-button type="danger" @click="delEmployee">-  删除员工</el-button>
 
     <!-- 表格 -->
     <el-table

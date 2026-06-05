@@ -14,7 +14,18 @@ export function getEmpById(id) {
   return request.get('/emps/' + id)
 }
 
-export function addEmp(employee) {
+export function updateEmp(employee) {
   console.log(employee)
   return request.put('/emps', employee)
+}
+
+// 删除员工
+export function delEmp(employees) {
+  console.log(employees)
+  return request.delete('/emps/' + employees)
+}
+
+export function addEmp(employee) {
+  console.log(employee)
+  return request.post('/emps', employee)
 }
