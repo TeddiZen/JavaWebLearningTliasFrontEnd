@@ -170,6 +170,13 @@ const delEmployee = async (ids) => {
   onSubmit()
 }
 
+// 监听删除员工ids
+const delIds = ref([])
+const handleSelectionChange = (val) => {
+  console.log('删除员工ids', val)
+  delIds.value = val.map((item) => item.id)
+}
+
 // 添加工作经历
 const addExperience = () => {
   employee.value.exprList.push({
@@ -220,8 +227,8 @@ onMounted(async () => {
     </span>
     <br>
     <span>
-      弹窗数据
-      {{ form }}
+      选中员工
+      {{ delIds }}
     </span>
     <el-form :inline="true" :model="params" class="demo-form-inline">
       <el-form-item style="width: 200px;" label="姓名">

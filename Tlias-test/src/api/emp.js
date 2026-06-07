@@ -20,18 +20,16 @@ export function updateEmp(employee) {
 }
 
 // 删除员工
-export function delEmp(employees) {
-  console.log(employees)
-  return request.delete('/emps/' + employees)
+export function delEmp(ids) {
+  console.log(ids)
+  return request.delete('/emps', {
+    params : {
+      ids : ids
+    }
+  })
 }
 
 export function addEmp(employee) {
   console.log(employee)
   return request.post('/emps', employee)
-}
-
-// 删除员工
-export function delEmp(ids) {
-  console.log(ids)
-  return request.delete('/emps', {params: ids})
 }
