@@ -1,6 +1,7 @@
 <script setup>
 import { getEmpList, getEmpById, addEmp, delEmp, updateEmp } from '@/api/emp'
 import { onMounted, ref, watch } from 'vue'
+import { ElMessage } from 'element-plus'
 
 const params = ref({
   page: 1,
@@ -170,14 +171,14 @@ const handleSelectionChange = async (val) => {
 
 // 批量删除员工
 const delEmployee = async () => {
-  if (ids.length === 0) {
+  if (delIds.value.length === 0) {
     ElMessage.error('请选择要删除的员工')
     return
   }
   console.log('删除员工ids', delIds.value)
   const res = await delEmp(delIds.value)
   console.log(res)
-  if (res.code === 200) {
+  if (res.code === 1) {
     ElMessage.success('删除成功')
     onSubmit()
   } else {
@@ -192,7 +193,7 @@ const delEmployeeById = async (id) => {
   const res = await delEmp(id)
   console.log(res)
   onSubmit()
-  if (res.code === 200) {
+  if (res.code === 1) {
     ElMessage.success('删除成功')
     onSubmit()
   } else {
