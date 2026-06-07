@@ -1,6 +1,6 @@
 <script setup>
 import { getEmpList, getEmpById, addEmp, delEmp, updateEmp } from '@/api/emp'
-import { onMounted, ref, watch,  } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const params = ref({
   page: 1,
@@ -162,19 +162,43 @@ const addEmployee = async () => {
   dialogVisible.value = true
 }
 
-// 批量删除员工
-const delEmployee = async (ids) => {
-  console.log(ids)
-  const res = await delEmp(ids)
-  console.log(res)
-  onSubmit()
-}
-
 // 监听删除员工ids
 const delIds = ref([])
-const handleSelectionChange = (val) => {
-  console.log('删除员工ids', val)
+const handleSelectionChange = async (val) => {
   delIds.value = val.map((item) => item.id)
+}
+
+// 批量删除员工
+const delEmployee = async () => {
+  if (ids.length === 0) {
+    ElMessage.error('请选择要删除的员工')
+    return
+  }
+  console.log('删除员工ids', delIds.value)
+  const res = await delEmp(delIds.value)
+  console.log(res)
+  if (res.code === 200) {
+    ElMessage.success('删除成功')
+    onSubmit()
+  } else {
+    ElMessage.error('删除失败', res.msg)
+  }
+  delIds.value = []
+}
+
+// 单项删除员工
+const delEmployeeById = async (id) => {
+  console.log( '删除员工id', id)
+  const res = await delEmp(id)
+  console.log(res)
+  onSubmit()
+  if (res.code === 200) {
+    ElMessage.success('删除成功')
+    onSubmit()
+  } else {
+    ElMessage.error('删除失败', res.msg)
+  }
+  delIds.value = []
 }
 
 // 添加工作经历
@@ -307,6 +331,7 @@ onMounted(async () => {
           <el-button
             size="small"
             type="danger"
+            @click="delEmployeeById(scope.row.id)"
           >
             删除
           </el-button>
