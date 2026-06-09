@@ -128,9 +128,12 @@ const handleCurrentChange = () => {
 // 图片上传模块
 const handleAvatarSuccess = (res, file) => {
   console.log('上传成功', res, file)
+  ElMessage.success('头像上传成功')
   employee.value.image = res.data
 }
+
 const beforeAvatarUpload = (file) => {
+  // 检查文件类型是否为图片
   const isImage = file.type.startsWith('image/')
   // 检查文件大小
   const isLt2M = file.size / 1024 / 1024 < 2
@@ -141,9 +144,15 @@ const beforeAvatarUpload = (file) => {
   if (!isLt2M) {
     ElMessage.error('图片不能超过 2MB！')
   }
-  
+
   return isImage && isLt2M
 }
+
+// 获取用户token
+const getUserToken = () => {
+  return JSON.parse(localStorage.getItem('loginToken'))
+}
+
 
 // 添加员工
 const addEmployee = async () => {
@@ -231,7 +240,6 @@ const handleEdit = async (id) => {
 const removeExperience = (index) => {
   employee.value.exprList.splice(index, 1)
 }
-
 
 
 // 初始化时查询员工列表
@@ -443,6 +451,7 @@ onMounted(async () => {
                 :show-file-list="false"
                 :on-success="handleAvatarSuccess"
                 :before-upload="beforeAvatarUpload"
+                :headers="{ 'token': getUserToken() }"
                 >
                 <img v-if="employee.image && employee.image !== ''" :src="employee.image" class="avatar" />
                 <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
