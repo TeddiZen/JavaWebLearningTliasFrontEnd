@@ -1,4 +1,6 @@
 import axios from 'axios'
+import router from '@/router'
+import { ElMessage } from 'element-plus'
 
 const request = axios.create({
   baseURL: '/api',
@@ -8,9 +10,15 @@ const request = axios.create({
 // 添加请求拦截器
 request.interceptors.request.use(function (config) {
     // 在发送请求之前做些什么
+    console.log(config)
+    const UserToken = JSON.parse(localStorage.getItem('loginToken'))
+    if(UserToken !== null && UserToken !== ''){
+      config.headers.token = UserToken
+    }
     return config;
   }, function (error) {
     // 对请求错误做些什么
+    ElMessage.error(error.message)
     return Promise.reject(error);
   });
 
@@ -22,6 +30,11 @@ request.interceptors.response.use(function (response) {
   }, function (error) {
     // 超出 2xx 范围的状态码都会触发该函数。
     // 对响应错误做点什么
+    if(error.response.status === 401){
+      ElMessage.error('登录过期，请重新登录')
+      router.push('/login')
+      localStorage.removeItem('loginToken')
+    }
     return Promise.reject(error);
   });
 

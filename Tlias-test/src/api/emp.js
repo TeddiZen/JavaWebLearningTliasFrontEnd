@@ -33,3 +33,9 @@ export function addEmp(employee) {
   console.log(employee)
   return request.post('/emps', employee)
 }
+
+// 登录
+export function login(loginForm) {
+  console.log(loginForm)
+  return request.post('/login', loginForm)
+} 
