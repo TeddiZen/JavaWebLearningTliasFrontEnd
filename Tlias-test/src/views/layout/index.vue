@@ -1,5 +1,15 @@
 <script setup>
 import { Promotion, User, Setting, HelpFilled } from '@element-plus/icons-vue'
+import router from '@/router'
+import { ElMessage } from 'element-plus'
+
+const logout = () => {
+  console.log(localStorage.getItem('loginToken'))
+  localStorage.removeItem('loginToken')
+  ElMessage.success('退出登录成功')
+  router.push('/login')
+}
+
 </script>
 
 <template>
@@ -12,7 +22,7 @@ import { Promotion, User, Setting, HelpFilled } from '@element-plus/icons-vue'
           <a href="">
             <el-icon><EditPen /></el-icon> 修改密码 &nbsp;&nbsp;&nbsp; |  &nbsp;&nbsp;&nbsp;
           </a>
-          <a href="">
+          <a @click="logout">
             <el-icon><SwitchButton /></el-icon> 退出登录
           </a>
         </span>

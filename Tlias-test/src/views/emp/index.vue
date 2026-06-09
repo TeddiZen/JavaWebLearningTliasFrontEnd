@@ -1,7 +1,7 @@
 <script setup>
 import { getEmpList, getEmpById, addEmp, delEmp, updateEmp } from '@/api/emp'
 import { onMounted, ref, watch } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const params = ref({
   page: 1,
@@ -74,8 +74,10 @@ const subEmployee = async () => {
   let res = {}
   if (dialogTitle.value === '添加员工') {
     res = await addEmp(employee.value)
+    ElMessage.success('添加成功')
   } else {
     res = await updateEmp(employee.value)
+    ElMessage.success('更新成功')
   }
   console.log(res)
   dialogVisible.value = false
@@ -84,9 +86,9 @@ const subEmployee = async () => {
 
 // 刷新员工列表
 const onSubmit = async () => {
-  console.log('submit!')
   const res = await getEmpList(params.value)
   emps.value.data = res.data
+  ElMessage.success('刷新成功')
   console.log(res)
 }
 
@@ -174,41 +176,57 @@ const addEmployee = async () => {
 
 // 监听删除员工ids
 const delIds = ref([])
-const handleSelectionChange = async (val) => {
+const handleSelectionChange = (val) => {
   delIds.value = val.map((item) => item.id)
 }
 
 // 批量删除员工
-const delEmployee = async () => {
+const delEmployee = () => {
   if (delIds.value.length === 0) {
     ElMessage.error('请选择要删除的员工')
     return
   }
-  console.log('删除员工ids', delIds.value)
-  const res = await delEmp(delIds.value)
-  console.log(res)
-  if (res.code === 1) {
-    ElMessage.success('删除成功')
-    onSubmit()
-  } else {
-    ElMessage.error('删除失败', res.msg)
-  }
-  delIds.value = []
+  ElMessageBox.confirm('确认删除选中员工吗？', '删除确认', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async () => {
+    console.log('删除员工ids', delIds.value)
+    const res = await delEmp(delIds.value)
+    console.log(res)
+    if (res.code === 1) {
+      ElMessage.success('删除成功')
+      onSubmit()
+    } else {
+      ElMessage.error('删除失败', res.msg)
+    }
+  }).catch(() => {
+    ElMessage.info('已取消删除')
+  }).finally(() => {
+    delIds.value = []
+  })
 }
 
 // 单项删除员工
-const delEmployeeById = async (id) => {
-  console.log( '删除员工id', id)
-  const res = await delEmp(id)
-  console.log(res)
-  onSubmit()
-  if (res.code === 1) {
-    ElMessage.success('删除成功')
-    onSubmit()
-  } else {
-    ElMessage.error('删除失败', res.msg)
-  }
-  delIds.value = []
+const delEmployeeById = (id, name) => {
+  console.log( '删除员工id, name', id, name)
+  ElMessageBox.confirm(`确认删除员工'${name}'吗？`, '删除确认', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async () => {
+    console.log(res)
+    if (res.code === 1) {
+      ElMessage.success('删除成功')
+      onSubmit()
+    } else {
+      ElMessage.error('删除失败', res.msg)
+    }
+  }).catch(() => {
+    ElMessage.info('已取消删除')
+  }).finally(() => {
+    delIds.value = []
+  })
 }
 
 // 添加工作经历
@@ -252,7 +270,7 @@ onMounted(async () => {
 <template>
   <div id="empIndex">
     <div>
-      <h2>员工管理</h2>
+      <b><h1>员工管理</h1></b>
     </div>
     <span>
       表单数据
@@ -302,6 +320,8 @@ onMounted(async () => {
       ref="multipleTableRef"
       :data="emps.data.rows"
       row-key="id"
+      stripe
+      border
       class="emp-table"
       @selection-change="handleSelectionChange"
       :cell-style="{ textAlign: 'center' }"
@@ -328,7 +348,7 @@ onMounted(async () => {
       <el-table-column prop="deptName" label="部门" width="120" />
       <el-table-column prop="entryDate" label="入职日期"  />
       <el-table-column prop="updateTime" label="最后操作日期" />
-      <el-table-column label="操作">
+      <el-table-column label="操作" width="200" fixed="right">
         <template #default="scope">
           <el-button 
             @click="handleEdit(scope.row.id)"
@@ -340,7 +360,7 @@ onMounted(async () => {
           <el-button
             size="small"
             type="danger"
-            @click="delEmployeeById(scope.row.id)"
+            @click="delEmployeeById(scope.row.id, scope.row.name)"
           >
             删除
           </el-button>
