@@ -2,6 +2,14 @@
 import { Promotion, User, Setting, HelpFilled } from '@element-plus/icons-vue'
 import router from '@/router'
 import { ElMessage } from 'element-plus'
+import { useCounterStore } from '@/stores/counter'
+
+//export const useCounterStore = defineStore('counter', () => {
+//  let userName = ref('')
+//  return { userName }
+// })
+// 以上为我定义的pinia store，帮我联动到userName的显示
+const counterStore = useCounterStore()
 
 const logout = () => {
   console.log(localStorage.getItem('loginToken'))
@@ -23,7 +31,7 @@ const logout = () => {
             <el-icon><EditPen /></el-icon> 修改密码 &nbsp;&nbsp;&nbsp; |  &nbsp;&nbsp;&nbsp;
           </a>
           <a @click="logout">
-            <el-icon><SwitchButton /></el-icon> 退出登录
+            <el-icon><SwitchButton /></el-icon> 退出登录 【{{ counterStore.userName }}】
           </a>
         </span>
       </el-header>
